@@ -2,7 +2,9 @@
 using DAL.DBContext.Models;
 using DAL.Interfaces;
 using DAL.Repositories;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
+using System.Threading.Tasks;
 
 namespace DAL
 {
@@ -10,9 +12,11 @@ namespace DAL
     {
         private ServiceCentreDBContext _db;
 
+        private ApplicationUserManager _userManager;
+        private ApplicationRoleManager _roleManager;
         private IRepository<Application> _applicationRepository;
         private IRepository<StatusOfApplication> _statusRepository;
-        private IRepository<User> _userRepository;
+        private IRepository<ApplicationUserProfile> _userRepository;
         private bool _disposed = false;
 
         public UOW()
@@ -44,21 +48,45 @@ namespace DAL
             }
         }
 
-        public IRepository<User> Users
+        public IRepository<ApplicationUserProfile> UsersProfiles
         {
             get
             {
                 if (_userRepository == null)
                 {
-                    _userRepository = new UserRepository(_db);
+                    _userRepository = new ApplicationsUserProfileRepository(_db);
                 }
                 return _userRepository;
             }
         }
 
-        public void Save()
+        public ApplicationUserManager UserManager
         {
-            _db.SaveChanges();
+            get
+            {
+                if (_userManager == null)
+                {
+                    _userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(_db));
+                }
+                return _userManager;
+            }
+        }
+
+        public ApplicationRoleManager RoleManager
+        {
+            get
+            {
+                if (_roleManager == null)
+                {
+                    _roleManager = new ApplicationRoleManager(new RoleStore<ApplicationRole>(_db));
+                }
+                return _roleManager;
+            }
+        }
+
+        public async Task SaveAsync()
+        {
+            await _db.SaveChangesAsync();
         }
 
         public virtual void Dispose(bool disposing)
