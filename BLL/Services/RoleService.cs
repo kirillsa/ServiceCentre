@@ -43,28 +43,41 @@ namespace BLL.Services
 
         public IEnumerable<RoleDTO> GetAll()
         {
-            throw new NotImplementedException();
+            var list = new List<RoleDTO>();
+            foreach (var item in _dataBase.RoleManager.Roles)
+            {
+                var newRole = new RoleDTO()
+                {
+                    Id = item.Id,
+                    Name = item.Name
+                };
+            }
+            return list;
         }
 
         public RoleDTO Get(int id)
         {
-            var roleToGet = _dataBase.RoleManager.FindByIdAsync(id.ToString());
+            ApplicationRole roleToGet = _dataBase.RoleManager.Roles.FirstOrDefault(x => x.Id == id.ToString());
             if (roleToGet == null)
             {
                 throw new ValidationException("Invalid role id", "");
             }
             return new RoleDTO()
             {
-                Name = roleToGet.ToString()
+                Name = roleToGet.Name
             };
         }
 
         public void Delete(int id)
         {
+            var roleToDelete = _dataBase.RoleManager.Roles.FirstOrDefault(x => x.Id == id.ToString());
+            if (roleToDelete == null)
+            {
+                throw new ValidationException("Invalid input Role ID", "");
+            }
             try
             {
-                //var roleToDelete = _dataBase.RoleManager.FindByIdAsync(id.ToString());
-                //_dataBase.RoleManager.DeleteAsync(roleToDelete);
+                _dataBase.RoleManager.DeleteAsync(roleToDelete);
                 _dataBase.SaveAsync();
             }
             catch
@@ -75,12 +88,19 @@ namespace BLL.Services
 
         public void Edit(RoleDTO item)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            _dataBase.Dispose();
+            if (item == null)
+            {
+                throw new ValidationException("Invalid input Role", "");
+            }
+            try
+            {
+                _dataBase.RoleManager.UpdateAsync(new ApplicationRole() { Name = item.Name });
+                _dataBase.SaveAsync();
+            }
+            catch(Exception)
+            {
+                throw new ValidationException("Error while editing Role", "");
+            }
         }
     }
 }

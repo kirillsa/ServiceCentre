@@ -1,5 +1,5 @@
 ﻿using DAL.DBContext.Models;
-using DAL.Repositories;
+using DAL.Identity;
 using System;
 using System.Threading.Tasks;
 
@@ -7,11 +7,11 @@ namespace DAL.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
+        ApplicationUserManager UserManager { get; }
+        ApplicationRoleManager RoleManager { get; }
         IRepository<Application> Applications { get; }
         IRepository<StatusOfApplication> Statuses { get; }
         IRepository<ApplicationUserProfile> UsersProfiles { get; }
-        ApplicationUserManager UserManager { get; }
-        ApplicationRoleManager RoleManager { get; }
         Task SaveAsync();
     }
 }

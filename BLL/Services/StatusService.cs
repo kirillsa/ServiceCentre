@@ -100,10 +100,5 @@ namespace BLL.Services
                 throw new ValidationException("Error while deleting status", "");
             }
         }
-
-        public void Dispose()
-        {
-            _dataBase.Dispose();
-        }
     }
 }

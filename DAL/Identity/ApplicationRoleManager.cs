@@ -2,7 +2,7 @@
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace DAL.Repositories
+namespace DAL.Identity
 {
     public class ApplicationRoleManager : RoleManager<ApplicationRole>
     {

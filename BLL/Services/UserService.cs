@@ -119,10 +119,5 @@ namespace BLL.Services
                 throw new ValidationException("Error while editing user", "");
             }
         }
-
-        public void Dispose()
-        {
-            _database.Dispose();
-        }
     }
 }

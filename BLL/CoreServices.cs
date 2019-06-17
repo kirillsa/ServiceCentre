@@ -5,6 +5,8 @@ using BLL.Interfaces;
 using BLL.DTO;
 using BLL.Infrastructure;
 using DAL.DBContext.Models;
+using System.Threading.Tasks;
+using BLL.Services;
 
 namespace BLL
 {
@@ -12,91 +14,62 @@ namespace BLL
     {
         private IUnitOfWork _dataBase;
 
+        private IUserService _userService { get; }
+        private IRepositoryBll<RoleDTO> _roleService { get; }
+        private IRepositoryBll<ApplicationDTO> _applicationService { get; }
+        private IRepositoryBll<StatusDTO> _statusService { get; }
+        private bool _disposed = false;
+
         public CoreServices(IUnitOfWork uow)
         {
             _dataBase = uow;
+            _userService = new UserService(_dataBase);
+            _roleService = new RoleService(_dataBase);
+            _applicationService = new ApplicationService(_dataBase);
+            _statusService = new StatusService(_dataBase);
         }
 
-        
-
-        public void CreateUser(UserDTO userDTO)
+        public IUserService UserServices
         {
-            if (userDTO == null)
+            get { return _userService; }
+        }
+
+        public IRepositoryBll<RoleDTO> RoleServices
+        {
+            get { return _roleService; }
+        }
+
+        public IRepositoryBll<ApplicationDTO> ApplicationServices
+        {
+            get { return _applicationService; }
+        }
+
+        public IRepositoryBll<StatusDTO> StatusServices
+        {
+            get { return _statusService; }
+        }
+
+        public async Task SaveAsync()
+        {
+            await _dataBase.SaveAsync();
+        }
+
+        public virtual void Dispose(bool disposing)
+        {
+            if (!this._disposed)
             {
-                throw new ValidationException("Invalid input User", "");
-            }
-            try
-            {
-                var newUser = new User()
+                if (disposing)
                 {
-                    Login = userDTO.Login,
-                    Name = userDTO.Name
-                };
-                _dataBase.Users.Create(newUser);
-                _dataBase.Save();
-            }
-            catch (Exception)
-            {
-                throw new ValidationException("Error while adding new User", ""); }
-        }
-        
-        public void EditUser(UserDTO userDTO)
-        {
-            if (userDTO == null)
-            {
-                throw new ValidationException("Invalid input User", "");
-            }
-            var userToChange = _dataBase.Users.Read(userDTO.Id);
-            if (userToChange == null)
-            {
-                throw new ValidationException($"Wrong user id = {userDTO.Id}", "");
-            }
-            try
-            {
-                userToChange.Name = userDTO.Name;
-                _dataBase.Users.Update(userToChange);
-                _dataBase.Save();
-            }
-            catch (Exception)
-            {
-                throw new ValidationException("Error while updating user", "");
+                    _dataBase.Dispose();
+                }
+                this._disposed = true;
             }
         }
 
-        public IEnumerable<UserDTO> GetAllUsers()
-        {
-            var list = new List<UserDTO>();
-            foreach (var item in _dataBase.Users.ReadAll())
-            {
-                var newUser = new UserDTO()
-                {
-                    Id = item.Id,
-                    Login = item.Login,
-                    Name = item.Name
-                };
-                list.Add(newUser);
-            }
-            return list;
-        }
-        
-        public UserDTO GetUser(int id)
-        {
-            var userToGet = _dataBase.Users.Read(id);
-            if (userToGet == null)
-            {
-                throw new ValidationException($"Incorrect Id={id}", "id");
-            }
-            var userToSend = new UserDTO()
-            {
-                Login = userToGet.Login,
-                Name = userToGet.Name
-            };
-            return userToSend;
-        }
-        
         public void Dispose()
         {
-            _dataBase.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using DAL.DBContext;
 using DAL.DBContext.Models;
 using DAL.Interfaces;
-using DAL.Repositories;
+using DAL.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Threading.Tasks;

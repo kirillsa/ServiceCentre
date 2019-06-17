@@ -4,7 +4,7 @@ using DAL.Interfaces;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 
-namespace DAL.Repositories
+namespace DAL.Identity
 {
     public class ApplicationsUserProfileRepository : IRepository<ApplicationUserProfile>
     {

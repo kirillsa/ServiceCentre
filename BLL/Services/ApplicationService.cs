@@ -119,10 +119,5 @@ namespace BLL.Services
                 throw new ValidationException("Error while deleting application", "");
             }
         }
-
-        public void Dispose()
-        {
-            _dataBase.Dispose();
-        }
     }
 }

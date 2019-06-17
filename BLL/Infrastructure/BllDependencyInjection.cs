@@ -9,7 +9,7 @@ using Ninject.Modules;
 
 namespace BLL.Infrastructure
 {
-    public class BllDIClass : NinjectModule
+    public class BllDependencyInjection : NinjectModule
     {
          public override void Load()
         {
