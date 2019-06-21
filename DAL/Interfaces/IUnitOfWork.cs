@@ -12,6 +12,6 @@ namespace DAL.Interfaces
         IRepository<Application> Applications { get; }
         IRepository<StatusOfApplication> Statuses { get; }
         IRepository<ApplicationUserProfile> UsersProfiles { get; }
-        Task SaveAsync();
+        void Save();
     }
 }

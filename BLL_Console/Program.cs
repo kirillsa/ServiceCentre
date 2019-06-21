@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ninject;
 using BLL;
 using BLL.DTO;
+using BLL.Infrastructure;
+using BLL_Console.infrastructure;
+using BLL.Interfaces;
 
 namespace BLL_Console
 {
@@ -15,35 +19,37 @@ namespace BLL_Console
             Go();
             Console.ReadLine();
         }
-        static async void Go()
+        static void Go()
         {
             var newUser = new UserDTO()
             {
-                Email = "admin@a.a",
+                Email = "gfdgd@a.a",
                 Password = "123456",
-                Name = "user2",
-                Role = "manager"
+                Name = "user4",
+                Role = "user"
             };
 
             var roles = new List<string>() { "manager", "admin" };
+            var kernel = new StandardKernel(new BLL_DI(), new BllDependencyInjection());
+            var core = kernel.Get<IMainService>();
 
-            var core = new CoreServices();
 
-
-            //foreach (var item in core.UserServices.GetAllUsers())
-            //{
-            //    Console.WriteLine($"{item.Id} - {item.UserName}");
-            //}
+            foreach (var item in core.UserServices.GetAllUsers())
+            {
+                Console.WriteLine($"{item.Id} - {item.UserName}");
+            }
             core.UserServices.SetInitialData(newUser, roles);
-
-            //core.UserServices.Create(newUser);
-            core.SaveAsync();
-
-
-            //foreach (var item in core.UserServices.GetAllUsers())
-            //{
-            //    Console.WriteLine($"{item.Id} - {item.UserName}");
-            //}
+            var users = core.UserServices.GetAllUsers();
+            var user = users.FirstOrDefault();
+            user.Name = "111";
+            user.UserName = "111";
+            core.UserServices.EditUser(user);
+            core.Save();
+            
+            foreach (var item in core.UserServices.GetAllUsers())
+            {
+                Console.WriteLine($"{item.Id} - {item.UserName}");
+            }
             
         }
     }

@@ -8,8 +8,8 @@ namespace BLL.Interfaces
     {
         void Create(T item);
         IEnumerable<T> GetAll();
-        T Get(int id);
+        T Get(string id);
         void Edit(T item);
-        void Delete(int id);
+        void Delete(string id);
     }
 }

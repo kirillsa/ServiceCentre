@@ -10,12 +10,12 @@ namespace BLL.Interfaces
     public interface IUserService
     {
         ApplicationUserManager AppUserManager { get; }
-        Task<OperationDetails> Create(UserDTO userDto);
-        Task<ClaimsIdentity> Authenticate(UserDTO userDto);
+        OperationDetails Create(UserDTO userDto);
+        ClaimsIdentity Authenticate(UserDTO userDto);
         void SetInitialData(UserDTO adminDto, List<string> roles);
 
         IEnumerable<UserDTO> GetAllUsers();
-        UserDTO GetUser(int id);
+        UserDTO GetUser(string id);
         void EditUser(UserDTO userDTO);
     }
 }

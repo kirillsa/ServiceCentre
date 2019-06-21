@@ -4,7 +4,7 @@ using DAL.DBContext.Models;
 
 namespace DAL.DBContext
 {
-    public class ServiceCentreDBContextInitializer : DropCreateDatabaseAlways<ServiceCentreDBContext>
+    public class ServiceCentreDBContextInitializer : DropCreateDatabaseIfModelChanges<ServiceCentreDBContext>
     {
         protected override void Seed(ServiceCentreDBContext db)
         {

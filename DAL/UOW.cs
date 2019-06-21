@@ -84,9 +84,9 @@ namespace DAL
             }
         }
 
-        public async Task SaveAsync()
+        public void Save()
         {
-            await _db.SaveChangesAsync();
+            _db.SaveChanges();
         }
 
         public virtual void Dispose(bool disposing)

@@ -34,11 +34,11 @@ namespace BLL.Services
                 {
                     ApplicationName = applicationDTO.ApplicationName,
                     UserOwner = owner,
-                    StatusId = 1,
+                    StatusId = "1",
                     DateOfChangeStatus = DateTime.Now
                 };
                 _dataBase.Applications.Create(newApp);
-                _dataBase.SaveAsync();
+                _dataBase.Save();
             }
             catch (Exception)
             {
@@ -66,7 +66,7 @@ namespace BLL.Services
             return list;
         }
 
-        public ApplicationDTO Get(int id)
+        public ApplicationDTO Get(string id)
         {
             var appToGet = _dataBase.Applications.Read(id);
             if (appToGet == null)
@@ -96,10 +96,10 @@ namespace BLL.Services
             {
                 var applicationToChange = _dataBase.Applications.Read(applicationDTO.Id);
                 applicationToChange.ApplicationName = applicationDTO.ApplicationName;
-                applicationToChange.StatusId = 1;
+                applicationToChange.StatusId = "1";
                 applicationToChange.DateOfChangeStatus = DateTime.Now;
                 _dataBase.Applications.Update(applicationToChange);
-                _dataBase.SaveAsync();
+                _dataBase.Save();
             }
             catch (Exception)
             {
@@ -107,12 +107,12 @@ namespace BLL.Services
             }
         }
 
-        public void Delete(int id)
+        public void Delete(string id)
         {
             try
             {
                 _dataBase.Applications.Delete(id);
-                _dataBase.SaveAsync();
+                _dataBase.Save();
             }
             catch (Exception)
             {

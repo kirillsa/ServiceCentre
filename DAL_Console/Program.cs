@@ -46,11 +46,11 @@ namespace DAL_Console
                 {
                     await uow.UserManager.AddToRoleAsync(user.Id, newUser.Role);
                 }
-                await uow.SaveAsync();
+                uow.Save();
             }
             user.UserName = "newName";
             await uow.UserManager.UpdateAsync(user);
-            await uow.SaveAsync();
+            uow.Save();
             foreach (var item in uow.UserManager.Users)
             {
                 Console.WriteLine($"{item.Email}, {item.PasswordHash}");

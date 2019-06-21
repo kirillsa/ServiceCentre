@@ -33,7 +33,7 @@ namespace BLL.Services
                     Name = item.Name
                 };
                 _dataBase.RoleManager.CreateAsync(newRole);
-                _dataBase.SaveAsync();
+                _dataBase.Save();
             }
             catch (Exception)
             {
@@ -55,7 +55,7 @@ namespace BLL.Services
             return list;
         }
 
-        public RoleDTO Get(int id)
+        public RoleDTO Get(string id)
         {
             ApplicationRole roleToGet = _dataBase.RoleManager.Roles.FirstOrDefault(x => x.Id == id.ToString());
             if (roleToGet == null)
@@ -69,7 +69,7 @@ namespace BLL.Services
             };
         }
 
-        public void Delete(int id)
+        public void Delete(string id)
         {
             var roleToDelete = _dataBase.RoleManager.Roles.FirstOrDefault(x => x.Id == id.ToString());
             if (roleToDelete == null)
@@ -79,7 +79,7 @@ namespace BLL.Services
             try
             {
                 _dataBase.RoleManager.DeleteAsync(roleToDelete);
-                _dataBase.SaveAsync();
+                _dataBase.Save();
             }
             catch
             {
@@ -96,7 +96,7 @@ namespace BLL.Services
             try
             {
                 _dataBase.RoleManager.UpdateAsync(new ApplicationRole() { Name = item.Name });
-                _dataBase.SaveAsync();
+                _dataBase.Save();
             }
             catch(Exception)
             {

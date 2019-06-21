@@ -20,14 +20,14 @@ namespace BLL
         private IRepositoryBll<StatusDTO> _statusService { get; }
         private bool _disposed = false;
 
-        public CoreServices()
-        {
-            DataBase = new DAL.UOW();
-            _userService = new UserService(DataBase);
-            _roleService = new RoleService(DataBase);
-            _applicationService = new ApplicationService(DataBase);
-            _statusService = new StatusService(DataBase);
-        }
+        //public CoreServices()
+        //{
+        //    DataBase = new DAL.UOW();
+        //    _userService = new UserService(DataBase);
+        //    _roleService = new RoleService(DataBase);
+        //    _applicationService = new ApplicationService(DataBase);
+        //    _statusService = new StatusService(DataBase);
+        //}
 
         public CoreServices(IUnitOfWork uow)
         {
@@ -58,9 +58,9 @@ namespace BLL
             get { return _statusService; }
         }
 
-        public async void SaveAsync()
+        public void Save()
         {
-            await DataBase.SaveAsync();
+            DataBase.Save();
         }
 
         public virtual void Dispose(bool disposing)

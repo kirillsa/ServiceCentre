@@ -4,17 +4,17 @@ namespace BLL.DTO
 {
     public class ApplicationDTO
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public DateTime DateOfCreateApplication { get; set; }
 
         public string ApplicationName { get; set; }
 
-        public int UserOwnerId { get; set; }
+        public string UserOwnerId { get; set; }
 
-        public int StatusId { get; set; }
+        public string StatusId { get; set; }
 
-        public int? ExecutorId { get; set; }
+        public string ExecutorId { get; set; }
 
         public DateTime DateOfChangeStatus { get; set; }
     }

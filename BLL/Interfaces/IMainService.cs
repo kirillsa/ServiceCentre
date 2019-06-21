@@ -13,6 +13,6 @@ namespace BLL.Interfaces
         IRepositoryBll<ApplicationDTO> ApplicationServices { get; }
         IUserService UserServices { get; }
         IRepositoryBll<RoleDTO> RoleServices { get; }
-        void SaveAsync();
+        void Save();
     }
 }

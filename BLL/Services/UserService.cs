@@ -31,21 +31,21 @@ namespace BLL.Services
             }
         }
 
-        public async Task<OperationDetails> Create(UserDTO userDto)
+        public OperationDetails Create(UserDTO userDto)
         {
-            ApplicationUser user = await AppUserManager.F.FindByEmailAsync(userDto.Email);
+            ApplicationUser user = AppUserManager.FindByEmail(userDto.Email);
             if (user == null)
             {
                 user = new ApplicationUser { Email = userDto.Email, UserName = userDto.Email };
-                var result = await AppUserManager.CreateAsync(user, userDto.Password);
+                var result = AppUserManager.Create(user, userDto.Password);
                 if (result.Errors.Count() > 0)
                     return new OperationDetails(false, result.Errors.FirstOrDefault(), "");
                 // добавляем роль
-                await AppUserManager.AddToRolesAsync(user.Id, userDto.Role.ToString());
+                AppUserManager.AddToRoles(user.Id, userDto.Role.ToString());
                 // создаем профиль клиента
                 ApplicationUserProfile clientProfile = new ApplicationUserProfile { Id = user.Id, Name = userDto.Name };
                 _database.UsersProfiles.Create(clientProfile);
-                await _database.SaveAsync();
+                _database.Save();
                 return new OperationDetails(true, "Регистрация успешно пройдена", "");
             }
             else
@@ -54,32 +54,32 @@ namespace BLL.Services
             }
         }
 
-        public async Task<ClaimsIdentity> Authenticate(UserDTO userDto)
+        public ClaimsIdentity Authenticate(UserDTO userDto)
         {
             ClaimsIdentity claim = null;
             // находим пользователя
-            ApplicationUser user = await _database.UserManager.FindAsync(userDto.Email, userDto.Password);
+            ApplicationUser user = _database.UserManager.Find(userDto.Email, userDto.Password);
             // авторизуем его и возвращаем объект ClaimsIdentity
             if (user != null)
             { 
-                claim = await _database.UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
+                claim = _database.UserManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
             }
             return claim;
         }
 
         // начальная инициализация бд
-        public async void SetInitialData(UserDTO adminDto, List<string> roles)
+        public void SetInitialData(UserDTO adminDto, List<string> roles)
         {
             foreach (string roleName in roles)
             {
-                var role = await _database.RoleManager.FindByNameAsync(roleName);
+                var role = _database.RoleManager.FindByName(roleName);
                 if (role == null)
                 {
                     role = new ApplicationRole { Name = roleName };
-                    await _database.RoleManager.CreateAsync(role);
+                    _database.RoleManager.Create(role);
                 }
             }
-            await Create(adminDto);
+            Create(adminDto);
         }
 
         public IEnumerable<UserDTO> GetAllUsers()
@@ -99,9 +99,9 @@ namespace BLL.Services
             return list;
         }
 
-        public UserDTO GetUser(int id)
+        public UserDTO GetUser(string id)
         {
-            var user = _database.UserManager.FindById(id.ToString());
+            var user = _database.UserManager.FindById(id);
             UserDTO userToGet = new UserDTO
             {
                 Id = user.Id,
@@ -120,9 +120,11 @@ namespace BLL.Services
             }
             try
             {
-                var userToChange = _database.UserManager.FindById(userDTO.Id);
-                userToChange.Email = userDTO.Email;
-                userToChange.UserName = userDTO.UserName;
+                var appUserToChange = _database.UserManager.FindById(userDTO.Id);
+                var appUserProfileToChange = _database.UsersProfiles.Read(userDTO.Id);
+                appUserToChange.Email = userDTO.Email;
+                appUserToChange.UserName = userDTO.UserName;
+                appUserProfileToChange.Name = userDTO.Name;
             }
             catch (Exception)
             {

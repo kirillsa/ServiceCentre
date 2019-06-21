@@ -20,7 +20,7 @@ namespace DAL.Identity
             _db.UsersProfiles.Add(item);
         }
 
-        public void Delete(int id)
+        public void Delete(string id)
         {
             var entity = _db.UsersProfiles.Find(id);
             if (entity != null)
@@ -29,7 +29,7 @@ namespace DAL.Identity
             }
         }
 
-        public ApplicationUserProfile Read(int id)
+        public ApplicationUserProfile Read(string id)
         {
             return _db.UsersProfiles.Find(id);
         }

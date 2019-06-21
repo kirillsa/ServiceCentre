@@ -20,7 +20,7 @@ namespace DAL.Identity
             _db.Statuses.Add(item);
         }
 
-        public void Delete(int id)
+        public void Delete(string id)
         {
             var entity = _db.Statuses.Find(id);
             if (entity != null)
@@ -29,7 +29,7 @@ namespace DAL.Identity
             }
         }
 
-        public StatusOfApplication Read(int id)
+        public StatusOfApplication Read(string id)
         {
             return _db.Statuses.Find(id);
         }

@@ -30,7 +30,7 @@ namespace BLL.Services
                     Name = item.Name
                 };
                 _dataBase.Statuses.Create(newStatus);
-                _dataBase.SaveAsync();
+                _dataBase.Save();
             }
             catch (Exception)
             {
@@ -53,7 +53,7 @@ namespace BLL.Services
             return list;
         }
 
-        public StatusDTO Get(int id)
+        public StatusDTO Get(string id)
         {
             var statusToGet = _dataBase.Statuses.Read(id);
             if (statusToGet == null)
@@ -80,7 +80,7 @@ namespace BLL.Services
                     Name = item.Name
                 };
                 _dataBase.Statuses.Create(statusToEdit);
-                _dataBase.SaveAsync();
+                _dataBase.Save();
             }
             catch (Exception)
             {
@@ -88,12 +88,12 @@ namespace BLL.Services
             }
         }
 
-        public void Delete(int id)
+        public void Delete(string id)
         {
             try
             {
                 _dataBase.Statuses.Delete(id);
-                _dataBase.SaveAsync();
+                _dataBase.Save();
             }
             catch (Exception)
             {
