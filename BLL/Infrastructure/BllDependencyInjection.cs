@@ -11,7 +11,7 @@ namespace BLL.Infrastructure
 {
     public class BllDependencyInjection : NinjectModule
     {
-         public override void Load()
+        public override void Load()
         {
             Bind<IUnitOfWork>().To<UOW>();
         }

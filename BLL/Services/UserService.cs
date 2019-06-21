@@ -7,6 +7,7 @@ using BLL.DTO;
 using BLL.Infrastructure;
 using BLL.Interfaces;
 using DAL.DBContext.Models;
+using DAL.Identity;
 using DAL.Interfaces;
 using Microsoft.AspNet.Identity;
 
@@ -16,22 +17,31 @@ namespace BLL.Services
     {
         private IUnitOfWork _database { get; set; }
 
+
         public UserService(IUnitOfWork uow)
         {
             _database = uow;
         }
 
+        public ApplicationUserManager AppUserManager
+        {
+            get
+            {
+                return _database.UserManager;
+            }
+        }
+
         public async Task<OperationDetails> Create(UserDTO userDto)
         {
-            ApplicationUser user = await _database.UserManager.FindByEmailAsync(userDto.Email);
+            ApplicationUser user = await AppUserManager.F.FindByEmailAsync(userDto.Email);
             if (user == null)
             {
                 user = new ApplicationUser { Email = userDto.Email, UserName = userDto.Email };
-                var result = await _database.UserManager.CreateAsync(user, userDto.Password);
+                var result = await AppUserManager.CreateAsync(user, userDto.Password);
                 if (result.Errors.Count() > 0)
                     return new OperationDetails(false, result.Errors.FirstOrDefault(), "");
                 // добавляем роль
-                await _database.UserManager.AddToRoleAsync(user.Id, userDto.Role);
+                await AppUserManager.AddToRolesAsync(user.Id, userDto.Role.ToString());
                 // создаем профиль клиента
                 ApplicationUserProfile clientProfile = new ApplicationUserProfile { Id = user.Id, Name = userDto.Name };
                 _database.UsersProfiles.Create(clientProfile);
@@ -58,7 +68,7 @@ namespace BLL.Services
         }
 
         // начальная инициализация бд
-        public async Task SetInitialData(UserDTO adminDto, List<string> roles)
+        public async void SetInitialData(UserDTO adminDto, List<string> roles)
         {
             foreach (string roleName in roles)
             {

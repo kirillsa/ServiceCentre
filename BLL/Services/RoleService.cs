@@ -64,6 +64,7 @@ namespace BLL.Services
             }
             return new RoleDTO()
             {
+                Id = roleToGet.Id,
                 Name = roleToGet.Name
             };
         }

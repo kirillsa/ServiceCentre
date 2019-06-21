@@ -7,7 +7,7 @@ namespace DAL.DBContext.Models.Config
         public StatusOfApplicationConfig()
         {
             HasKey(x => x.Id);
-            Property(x => x.Name).HasMaxLength(10);
+            Property(x => x.Name).HasMaxLength(15);
         }
     }
 }

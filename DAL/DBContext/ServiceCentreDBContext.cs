@@ -20,6 +20,7 @@ namespace DAL.DBContext
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Configurations.Add<Application>(new ApplicationConfig());
             modelBuilder.Configurations.Add<StatusOfApplication>(new StatusOfApplicationConfig());
             modelBuilder.Configurations.Add<ApplicationUserProfile>(new ApplicationUserProfileConfig());

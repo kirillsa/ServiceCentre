@@ -3,14 +3,16 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using BLL.DTO;
 using BLL.Infrastructure;
+using DAL.Identity;
 
 namespace BLL.Interfaces
 {
     public interface IUserService
     {
+        ApplicationUserManager AppUserManager { get; }
         Task<OperationDetails> Create(UserDTO userDto);
         Task<ClaimsIdentity> Authenticate(UserDTO userDto);
-        Task SetInitialData(UserDTO adminDto, List<string> roles);
+        void SetInitialData(UserDTO adminDto, List<string> roles);
 
         IEnumerable<UserDTO> GetAllUsers();
         UserDTO GetUser(int id);

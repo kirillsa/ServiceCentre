@@ -4,7 +4,7 @@ using DAL.DBContext.Models;
 
 namespace DAL.DBContext
 {
-    public class ServiceCentreDBContextInitializer : DropCreateDatabaseIfModelChanges<ServiceCentreDBContext>
+    public class ServiceCentreDBContextInitializer : DropCreateDatabaseAlways<ServiceCentreDBContext>
     {
         protected override void Seed(ServiceCentreDBContext db)
         {
@@ -12,7 +12,12 @@ namespace DAL.DBContext
             StatusOfApplication status2 = new StatusOfApplication() { Name = "In Progress" };
             StatusOfApplication status3 = new StatusOfApplication() { Name = "Completed" };
             db.Statuses.AddRange(new List<StatusOfApplication>() { status1, status2, status3 });
-
+            ApplicationRole role1 = new ApplicationRole() { Name = "admin" };
+            ApplicationRole role2 = new ApplicationRole() { Name = "user" };
+            ApplicationRole role3 = new ApplicationRole() { Name = "manager" };
+            db.Roles.Add(role1);
+            //db.Roles.Add(role2);
+            //db.Roles.Add(role3);
             /*User user1 = new User() { Login = "user1", Name = "user1Name" };
             User user2 = new User() { Login = "user2", Name = "user2Name" };
             User user3 = new User() { Login = "user3", Name = "user3Name" };

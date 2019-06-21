@@ -12,7 +12,7 @@ namespace BLL
 {
     public class CoreServices : IMainService
     {
-        private IUnitOfWork _dataBase;
+        public IUnitOfWork DataBase { get; private set; }
 
         private IUserService _userService { get; }
         private IRepositoryBll<RoleDTO> _roleService { get; }
@@ -20,13 +20,22 @@ namespace BLL
         private IRepositoryBll<StatusDTO> _statusService { get; }
         private bool _disposed = false;
 
+        public CoreServices()
+        {
+            DataBase = new DAL.UOW();
+            _userService = new UserService(DataBase);
+            _roleService = new RoleService(DataBase);
+            _applicationService = new ApplicationService(DataBase);
+            _statusService = new StatusService(DataBase);
+        }
+
         public CoreServices(IUnitOfWork uow)
         {
-            _dataBase = uow;
-            _userService = new UserService(_dataBase);
-            _roleService = new RoleService(_dataBase);
-            _applicationService = new ApplicationService(_dataBase);
-            _statusService = new StatusService(_dataBase);
+            DataBase = uow;
+            _userService = new UserService(DataBase);
+            _roleService = new RoleService(DataBase);
+            _applicationService = new ApplicationService(DataBase);
+            _statusService = new StatusService(DataBase);
         }
 
         public IUserService UserServices
@@ -49,9 +58,9 @@ namespace BLL
             get { return _statusService; }
         }
 
-        public async Task SaveAsync()
+        public async void SaveAsync()
         {
-            await _dataBase.SaveAsync();
+            await DataBase.SaveAsync();
         }
 
         public virtual void Dispose(bool disposing)
@@ -60,7 +69,7 @@ namespace BLL
             {
                 if (disposing)
                 {
-                    _dataBase.Dispose();
+                    DataBase.Dispose();
                 }
                 this._disposed = true;
             }
