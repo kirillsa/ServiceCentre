@@ -5,6 +5,7 @@ using DAL.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 
 namespace DAL
 {
@@ -67,6 +68,11 @@ namespace DAL
                 if (_userManager == null)
                 {
                     _userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(_db));
+                    _userManager.PasswordValidator = new PasswordValidator
+                                                         {
+                                                             RequireDigit = true,
+                                                             RequiredLength = 6
+                                                         };
                 }
                 return _userManager;
             }

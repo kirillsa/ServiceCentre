@@ -3,24 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
+using BLL;
+using BLL.DTO;
 using BLL.Interfaces;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Host.SystemWeb;
+using Microsoft.Owin.Security;
 
 namespace PrL.Controllers
 {
     public class ValuesController : ApiController
     {
-        private IMainService _coreService;
+        //private IMainService _coreService;
 
-        public ValuesController(IMainService coreService)
+        //public ValuesController(IMainService coreService)
+        //{
+        //    _coreService = coreService;
+        //}
+
+        private IUserService UserService
         {
-            _coreService = coreService;
+            get
+            {
+                return HttpContext.Current.GetOwinContext().Get<IMainService>().UserServices;
+            }
         }
 
-        // GET api/values
-        public IEnumerable<string> Get()
+        private IAuthenticationManager AuthenticationManager
         {
-            return new string[] { "value1", "value2" };
+            get
+            {
+                return HttpContext.Current.GetOwinContext().Authentication;
+            }
+        }
+
+        //public ValuesController()
+        //{
+        //    _coreService = new CoreServices();
+        //}
+        [Authorize]
+        // GET api/values
+        public IEnumerable<UserDTO> Get()
+        {
+
+            return UserService.GetAllUsers();
+            //return _coreService.UserServices.GetAllUsers();
         }
 
         // GET api/values/5

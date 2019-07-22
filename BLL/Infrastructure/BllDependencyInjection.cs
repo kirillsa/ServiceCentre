@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DAL;
+using DAL.Identity;
 using DAL.Interfaces;
 using Ninject.Modules;
 
@@ -14,6 +15,7 @@ namespace BLL.Infrastructure
         public override void Load()
         {
             Bind<IUnitOfWork>().To<UOW>();
+            Bind<ApplicationUserManager>().ToSelf();
         }
     }
 }

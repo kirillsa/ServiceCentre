@@ -23,7 +23,7 @@ namespace BLL.Services
             _database = uow;
         }
 
-        public ApplicationUserManager AppUserManager
+        private ApplicationUserManager AppUserManager
         {
             get
             {
@@ -54,15 +54,15 @@ namespace BLL.Services
             }
         }
 
-        public ClaimsIdentity Authenticate(UserDTO userDto)
+        public ClaimsIdentity Authenticate(UserDTO userDto, string authenticationType)
         {
             ClaimsIdentity claim = null;
             // находим пользователя
-            ApplicationUser user = _database.UserManager.Find(userDto.Email, userDto.Password);
+            ApplicationUser user = AppUserManager.Find(userDto.Email, userDto.Password);
             // авторизуем его и возвращаем объект ClaimsIdentity
             if (user != null)
-            { 
-                claim = _database.UserManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+            {
+                claim = AppUserManager.CreateIdentity(user, authenticationType);
             }
             return claim;
         }
@@ -85,14 +85,15 @@ namespace BLL.Services
         public IEnumerable<UserDTO> GetAllUsers()
         {
             var list = new List<UserDTO>();
-            foreach (var user in _database.UsersProfiles.ReadAll())
+            var collection = _database.UserManager.Users;
+            foreach (var user in collection)
             {
                 var newUser = new UserDTO()
                 {
                     Id = user.Id,
-                    Email = user.ApplicationUser.Email,
-                    Password = user.ApplicationUser.PasswordHash,
-                    UserName = user.ApplicationUser.UserName
+                    Email = user.Email,
+                    Password = user.PasswordHash,
+                    UserName = user.UserName
                 };
                 list.Add(newUser);
             }
@@ -125,11 +126,38 @@ namespace BLL.Services
                 appUserToChange.Email = userDTO.Email;
                 appUserToChange.UserName = userDTO.UserName;
                 appUserProfileToChange.Name = userDTO.Name;
+                _database.Save();
             }
             catch (Exception)
             {
                 throw new ValidationException("Error while editing user", "");
             }
+        }
+
+        public UserDTO Find(string login, string password)
+        {
+            var user = AppUserManager.Find(login, password);
+            UserDTO userToGet = new UserDTO
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Password = user.PasswordHash,
+                UserName = user.UserName
+            };
+            return userToGet;
+        }
+
+        public UserDTO Find(UserLoginInfo userLoginInfo)
+        {
+            var user = AppUserManager.Find(userLoginInfo);
+            UserDTO userToGet = new UserDTO
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Password = user.PasswordHash,
+                UserName = user.UserName
+            };
+            return userToGet;
         }
     }
 }
