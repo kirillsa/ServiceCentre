@@ -2,7 +2,7 @@
 
 namespace PrL.Models
 {
-    public class LoginModel
+    public class UserLoginModel
     {
         [Required]
         public string Email { get; set; }

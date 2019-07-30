@@ -41,7 +41,7 @@ namespace BLL.Services
                 if (result.Errors.Count() > 0)
                     return new OperationDetails(false, result.Errors.FirstOrDefault(), "");
                 // добавляем роль
-                AppUserManager.AddToRoles(user.Id, userDto.Role.ToString());
+                AppUserManager.AddToRoles(user.Id, userDto.Roles.ToString());
                 // создаем профиль клиента
                 ApplicationUserProfile clientProfile = new ApplicationUserProfile { Id = user.Id, Name = userDto.Name };
                 _database.UsersProfiles.Create(clientProfile);
@@ -85,16 +85,28 @@ namespace BLL.Services
         public IEnumerable<UserDTO> GetAllUsers()
         {
             var list = new List<UserDTO>();
-            var collection = _database.UserManager.Users;
-            foreach (var user in collection)
+            foreach (var user in _database.UserManager.Users)
             {
+                
                 var newUser = new UserDTO()
                 {
+                    
                     Id = user.Id,
                     Email = user.Email,
                     Password = user.PasswordHash,
                     UserName = user.UserName
                 };
+                var currentUserRolesList = AppUserManager.GetRoles(user.Id);
+                string roles = "";
+                if (currentUserRolesList != null)
+                {
+                    foreach (var role in currentUserRolesList)
+                    {
+                        roles += role + ',';
+                    }
+                    roles = roles.TrimEnd(',');
+                }
+                newUser.Roles = roles;
                 list.Add(newUser);
             }
             return list;
@@ -137,6 +149,10 @@ namespace BLL.Services
         public UserDTO Find(string login, string password)
         {
             var user = AppUserManager.Find(login, password);
+            if (user == null)
+            {
+                return null;
+            }
             UserDTO userToGet = new UserDTO
             {
                 Id = user.Id,
@@ -150,6 +166,10 @@ namespace BLL.Services
         public UserDTO Find(UserLoginInfo userLoginInfo)
         {
             var user = AppUserManager.Find(userLoginInfo);
+            if (user == null)
+            {
+                return null;
+            }
             UserDTO userToGet = new UserDTO
             {
                 Id = user.Id,

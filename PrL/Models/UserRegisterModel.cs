@@ -2,7 +2,7 @@
 
 namespace PrL.Models
 {
-    public class RegisterModel
+    public class UserRegisterModel
     {
         [Required]
         public string Email { get; set; }

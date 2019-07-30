@@ -10,7 +10,6 @@ namespace BLL.Interfaces
 {
     public interface IUserService
     {
-        //ApplicationUserManager AppUserManager { get; }
         OperationDetails Create(UserDTO userDto);
         ClaimsIdentity Authenticate(UserDTO userDto, string authenticationType);
         void SetInitialData(UserDTO adminDto, List<string> roles);

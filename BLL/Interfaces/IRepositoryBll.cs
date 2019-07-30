@@ -8,6 +8,7 @@ namespace BLL.Interfaces
     {
         void Create(T item);
         IEnumerable<T> GetAll();
+        IEnumerable<T> Find(Func<T, Boolean> predicate);
         T Get(string id);
         void Edit(T item);
         void Delete(string id);

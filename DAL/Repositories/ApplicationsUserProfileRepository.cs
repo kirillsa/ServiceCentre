@@ -1,8 +1,10 @@
 ﻿using DAL.DBContext;
 using DAL.DBContext.Models;
 using DAL.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using System.Linq;
 
 namespace DAL.Identity
 {
@@ -13,6 +15,11 @@ namespace DAL.Identity
         public ApplicationsUserProfileRepository(ServiceCentreDBContext context)
         {
             _db = context;
+        }
+
+        public IEnumerable<ApplicationUserProfile> Find(Func<ApplicationUserProfile, Boolean> predicate)
+        {
+            return _db.UsersProfiles.Where(predicate).ToList();
         }
 
         public void Create(ApplicationUserProfile item)

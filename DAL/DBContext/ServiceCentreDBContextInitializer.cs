@@ -16,8 +16,8 @@ namespace DAL.DBContext
             ApplicationRole role2 = new ApplicationRole() { Name = "user" };
             ApplicationRole role3 = new ApplicationRole() { Name = "manager" };
             db.Roles.Add(role1);
-            //db.Roles.Add(role2);
-            //db.Roles.Add(role3);
+            db.Roles.Add(role2);
+            db.Roles.Add(role3);
             /*User user1 = new User() { Login = "user1", Name = "user1Name" };
             User user2 = new User() { Login = "user2", Name = "user2Name" };
             User user3 = new User() { Login = "user3", Name = "user3Name" };

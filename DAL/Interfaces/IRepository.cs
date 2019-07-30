@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DAL.Interfaces
@@ -8,6 +9,7 @@ namespace DAL.Interfaces
     {
         void Create(T item);
         IEnumerable<T> ReadAll();
+        IEnumerable<T> Find(Func<T, Boolean> predicate);
         T Read(string id);
         void Update(T item);
         void Delete(string id);

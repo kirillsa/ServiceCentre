@@ -1,8 +1,10 @@
 ﻿using DAL.DBContext;
 using DAL.DBContext.Models;
 using DAL.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using System.Linq;
 
 namespace DAL.Identity
 {
@@ -18,6 +20,11 @@ namespace DAL.Identity
         public void Create(StatusOfApplication item)
         {
             _db.Statuses.Add(item);
+        }
+
+        public IEnumerable<StatusOfApplication> Find(Func<StatusOfApplication, Boolean> predicate)
+        {
+            return _db.Statuses.Where(predicate).ToList();
         }
 
         public void Delete(string id)

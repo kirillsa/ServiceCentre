@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BLL.DTO;
 using BLL.Infrastructure;
 using BLL.Interfaces;
@@ -36,6 +37,21 @@ namespace BLL.Services
             {
                 throw new ValidationException("Error while creating new status", "");
             }
+        }
+
+        public IEnumerable<StatusDTO> Find(Func<StatusDTO, Boolean> predicate)
+        {
+            var list = new List<StatusDTO>();
+            foreach (var item in _dataBase.Statuses.ReadAll())
+            {
+                var newStatus = new StatusDTO()
+                {
+                    Id = item.Id,
+                    Name = item.Name
+                };
+                list.Add(newStatus);
+            }
+            return list.Where(predicate).ToList();
         }
 
         public IEnumerable<StatusDTO> GetAll()

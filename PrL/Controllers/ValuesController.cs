@@ -23,6 +23,11 @@ namespace PrL.Controllers
         //    _coreService = coreService;
         //}
 
+        //public ValuesController()
+        //{
+        //    _coreService = new CoreServices();
+        //}
+
         private IUserService UserService
         {
             get
@@ -39,10 +44,6 @@ namespace PrL.Controllers
             }
         }
 
-        //public ValuesController()
-        //{
-        //    _coreService = new CoreServices();
-        //}
         [Authorize]
         // GET api/values
         public IEnumerable<UserDTO> Get()

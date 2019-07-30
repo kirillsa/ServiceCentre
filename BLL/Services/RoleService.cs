@@ -8,6 +8,7 @@ using BLL.DTO;
 using DAL.Interfaces;
 using DAL.DBContext.Models;
 using BLL.Infrastructure;
+using Microsoft.AspNet.Identity;
 
 namespace BLL.Services
 {
@@ -26,19 +27,33 @@ namespace BLL.Services
             {
                 throw new ValidationException("Invalid input Role", "");
             }
+            var newRole = new ApplicationRole()
+            {
+                Name = item.Name
+            };
             try
             {
-                var newRole = new ApplicationRole()
-                {
-                    Name = item.Name
-                };
-                _dataBase.RoleManager.CreateAsync(newRole);
+                _dataBase.RoleManager.Create(newRole);
                 _dataBase.Save();
             }
             catch (Exception)
             {
                 throw new ValidationException("Error while creating a Role", "");
             }
+        }
+
+        public IEnumerable<RoleDTO> Find(Func<RoleDTO, Boolean> predicate)
+        {
+            var list = new List<RoleDTO>();
+            foreach (var item in _dataBase.RoleManager.Roles)
+            {
+                var newRole = new RoleDTO()
+                {
+                    Id = item.Id,
+                    Name = item.Name
+                };
+            }
+            return list.Where(predicate).ToList();
         }
 
         public IEnumerable<RoleDTO> GetAll()
@@ -51,6 +66,7 @@ namespace BLL.Services
                     Id = item.Id,
                     Name = item.Name
                 };
+                list.Add(newRole);
             }
             return list;
         }
@@ -78,7 +94,7 @@ namespace BLL.Services
             }
             try
             {
-                _dataBase.RoleManager.DeleteAsync(roleToDelete);
+                _dataBase.RoleManager.Delete(roleToDelete);
                 _dataBase.Save();
             }
             catch
@@ -95,7 +111,7 @@ namespace BLL.Services
             }
             try
             {
-                _dataBase.RoleManager.UpdateAsync(new ApplicationRole() { Name = item.Name });
+                _dataBase.RoleManager.Update(new ApplicationRole() { Name = item.Name });
                 _dataBase.Save();
             }
             catch(Exception)

@@ -5,6 +5,7 @@ using BLL.DTO;
 using DAL.Interfaces;
 using BLL.Infrastructure;
 using DAL.DBContext.Models;
+using System.Linq;
 
 namespace BLL.Services
 {
@@ -44,6 +45,26 @@ namespace BLL.Services
             {
                 throw new ValidationException("Error while Adding new Application", "");
             }
+        }
+
+        public IEnumerable<ApplicationDTO> Find(Func<ApplicationDTO, Boolean> predicate)
+        {
+            var list = new List<ApplicationDTO>();
+            foreach (var item in _dataBase.Applications.ReadAll())
+            {
+                var newApp = new ApplicationDTO()
+                {
+                    Id = item.Id,
+                    DateOfChangeStatus = item.DateOfChangeStatus,
+                    ApplicationName = item.ApplicationName,
+                    DateOfCreateApplication = item.DateOfCreateApplication,
+                    ExecutorId = item.ExecutorId,
+                    StatusId = item.StatusId,
+                    UserOwnerId = item.UserOwnerId
+                };
+                list.Add(newApp);
+            }
+            return list.Where(predicate).ToList();
         }
 
         public IEnumerable<ApplicationDTO> GetAll()
