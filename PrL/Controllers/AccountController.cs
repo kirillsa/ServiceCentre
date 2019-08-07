@@ -11,10 +11,11 @@ using PrL.Models;
 using Microsoft.Owin.Security.Cookies;
 using System.Threading.Tasks;
 using BLL.Infrastructure;
+using System.Web.Http.Cors;
 
 namespace PrL.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
@@ -52,7 +53,7 @@ namespace PrL.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new UserDTO() { UserName = model.Email, Email = model.Email, Password = model.Password, Roles = "manager" };
+            var user = new UserDTO() { UserName = model.Name, Email = model.Email, Password = model.Password, Roles = "user" };
 
             OperationDetails result = UserService.Create(user);
 
@@ -66,7 +67,7 @@ namespace PrL.Controllers
 
         [AllowAnonymous]
         [Route("Login")]
-        public void Login(UserLoginModel model)
+        public IHttpActionResult Login(UserLoginModel model)
         {
             if (ModelState.IsValid)
             {
@@ -84,8 +85,10 @@ namespace PrL.Controllers
                         IsPersistent = true
                     }, claim);
                     //return RedirectToAction("Index", "Home");
+                    return Ok(userDto);
                 }
             };
+            return NotFound();
         }
 
         // POST api/Account/Logout
@@ -96,7 +99,9 @@ namespace PrL.Controllers
             return Ok();
         }
 
-        [Authorize(Roles = "admin")]
+        [AllowAnonymous]
+        //[Authorize(Roles = "admin")]
+        [HttpGet]
         public IHttpActionResult GetAllUsers()
         {
             return Ok(UserService.GetAllUsers());

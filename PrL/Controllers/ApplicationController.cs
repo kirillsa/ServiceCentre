@@ -44,20 +44,23 @@ namespace PrL.Controllers
         {
             if (User.IsInRole("admin"))
             {
-                return Ok(ApplicationsService.GetAll());
+                var resultList = CollectInfoAboutApplications(ApplicationsService.GetAll());
+                return Ok(resultList);
             }
             if (User.IsInRole("manager"))
             {
                 var currentUser = UserService.GetAllUsers().Where(x => x.UserName == User.Identity.Name).First();
                 var statusOfApplicationToShow = StatusService.Find(y => y.Name == "new").First();
                 IEnumerable<ApplicationDTO> appList = ApplicationsService.Find(x => x.StatusId == statusOfApplicationToShow.Id || x.ExecutorId == currentUser.Id);
-                return Ok(appList);
+                var resultList = CollectInfoAboutApplications(appList);
+                return Ok(resultList);
             }
             if (User.IsInRole("user"))
             {
                 var currentUser = UserService.GetAllUsers().Where(x => x.UserName == User.Identity.Name).First();
                 IEnumerable<ApplicationDTO> appList = ApplicationsService.Find(x => x.UserOwnerId == currentUser.Id);
-                return Ok(appList);
+                var resultList = CollectInfoAboutApplications(appList);
+                return Ok(resultList);
             }
             return Content(HttpStatusCode.Forbidden, "You have no rights for this content");
         }
@@ -135,6 +138,32 @@ namespace PrL.Controllers
                 return BadRequest(exception.Message);
             }
             return Ok();
+        }
+
+        private IEnumerable<ApplicationGetModel> CollectInfoAboutApplications(IEnumerable<ApplicationDTO> inputList)
+        {
+            var resultList = new List<ApplicationGetModel> { };
+            foreach (var item in inputList)
+            {
+                var newResultItem = new ApplicationGetModel
+                {
+                    Id = item.Id,
+                    ApplicationName = item.ApplicationName,
+                    DateOfCreationApplication = item.DateOfCreateApplication,
+                    StatusId = item.StatusId,
+                    StatusName = StatusService.Get(item.StatusId).Name,
+                    UserOwnerId = item.UserOwnerId,
+                    UserOwnerName = UserService.GetUser(item.UserOwnerId).UserName,
+                    ExecutorId = item.ExecutorId,
+                    DateOfChangeStatus = item.DateOfChangeStatus
+                };
+                if (item.ExecutorId != null)
+                {
+                    newResultItem.ExecutorName = UserService.GetUser(item.ExecutorId).Name;
+                }
+                resultList.Add(newResultItem);
+            }
+            return resultList;
         }
     }
 }

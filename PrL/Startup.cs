@@ -40,7 +40,7 @@ namespace PrL
 
             //--------------Context for AppUserMngr
             //DataProtectionProvider = app.GetDataProtectionProvider();   //???
-
+            app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
             //--------------Service
             app.CreatePerOwinContext<IMainService>(() => kernel.Get<IMainService>());
 
@@ -61,7 +61,7 @@ namespace PrL
                 TokenEndpointPath = new PathString("/Token"),
                 Provider = new ApplicationOAuthProvider(PublicClientId),
                 //AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
-                AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(2),
+                AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(10),
                 // In production mode set AllowInsecureHttp = false
                 AllowInsecureHttp = true
             };
