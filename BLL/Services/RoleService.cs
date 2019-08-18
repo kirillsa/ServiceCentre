@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BLL.Interfaces;
 using BLL.DTO;
 using DAL.Interfaces;
@@ -33,7 +31,7 @@ namespace BLL.Services
             };
             try
             {
-                _dataBase.RoleManager.Create(newRole);
+                _dataBase.Roles.Create(newRole);
                 _dataBase.Save();
             }
             catch (Exception)
@@ -42,24 +40,10 @@ namespace BLL.Services
             }
         }
 
-        public IEnumerable<RoleDTO> Find(Func<RoleDTO, Boolean> predicate)
-        {
-            var list = new List<RoleDTO>();
-            foreach (var item in _dataBase.RoleManager.Roles)
-            {
-                var newRole = new RoleDTO()
-                {
-                    Id = item.Id,
-                    Name = item.Name
-                };
-            }
-            return list.Where(predicate).ToList();
-        }
-
         public IEnumerable<RoleDTO> GetAll()
         {
             var list = new List<RoleDTO>();
-            foreach (var item in _dataBase.RoleManager.Roles)
+            foreach (var item in _dataBase.Roles.Roles)
             {
                 var newRole = new RoleDTO()
                 {
@@ -73,7 +57,7 @@ namespace BLL.Services
 
         public RoleDTO Get(string id)
         {
-            ApplicationRole roleToGet = _dataBase.RoleManager.Roles.FirstOrDefault(x => x.Id == id.ToString());
+            ApplicationRole roleToGet = _dataBase.Roles.Roles.FirstOrDefault(x => x.Id == id);
             if (roleToGet == null)
             {
                 throw new ValidationException("Invalid role id", "");
@@ -85,22 +69,19 @@ namespace BLL.Services
             };
         }
 
-        public void Delete(string id)
+        public IEnumerable<RoleDTO> Find(Func<RoleDTO, bool> predicate)
         {
-            var roleToDelete = _dataBase.RoleManager.Roles.FirstOrDefault(x => x.Id == id.ToString());
-            if (roleToDelete == null)
+            var list = new List<RoleDTO>();
+            foreach (var item in _dataBase.Roles.Roles)
             {
-                throw new ValidationException("Invalid input Role ID", "");
+                var newRole = new RoleDTO()
+                {
+                    Id = item.Id,
+                    Name = item.Name
+                };
+                list.Add(newRole);
             }
-            try
-            {
-                _dataBase.RoleManager.Delete(roleToDelete);
-                _dataBase.Save();
-            }
-            catch
-            {
-                throw new ValidationException("Error while deleting Role", "");
-            }
+            return list.Where(predicate).ToList();
         }
 
         public void Edit(RoleDTO item)
@@ -111,12 +92,32 @@ namespace BLL.Services
             }
             try
             {
-                _dataBase.RoleManager.Update(new ApplicationRole() { Name = item.Name });
+                var roleToEdit = _dataBase.Roles.FindById(item.Id);
+                roleToEdit.Name = item.Name;
+                _dataBase.Roles.Update(roleToEdit);
                 _dataBase.Save();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw new ValidationException("Error while editing Role", "");
+            }
+        }
+
+        public void Delete(string id)
+        {
+            var roleToDelete = _dataBase.Roles.Roles.FirstOrDefault(x => x.Id == id);
+            if (roleToDelete == null)
+            {
+                throw new ValidationException("Invalid input Role ID", "");
+            }
+            try
+            {
+                _dataBase.Roles.Delete(roleToDelete);
+                _dataBase.Save();
+            }
+            catch
+            {
+                throw new ValidationException("Error while deleting Role", "");
             }
         }
     }

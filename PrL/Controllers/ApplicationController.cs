@@ -39,7 +39,6 @@ namespace PrL.Controllers
             }
         }
 
-        [Authorize]
         public IHttpActionResult GetAllApplications()
         {
             if (User.IsInRole("admin"))
@@ -49,7 +48,7 @@ namespace PrL.Controllers
             }
             if (User.IsInRole("manager"))
             {
-                var currentUser = UserService.GetAllUsers().Where(x => x.UserName == User.Identity.Name).First();
+                var currentUser = UserService.GetAll().Where(x => x.UserName == User.Identity.Name).First();
                 var statusOfApplicationToShow = StatusService.Find(y => y.Name == "new").First();
                 IEnumerable<ApplicationDTO> appList = ApplicationsService.Find(x => x.StatusId == statusOfApplicationToShow.Id || x.ExecutorId == currentUser.Id);
                 var resultList = CollectInfoAboutApplications(appList);
@@ -57,7 +56,7 @@ namespace PrL.Controllers
             }
             if (User.IsInRole("user"))
             {
-                var currentUser = UserService.GetAllUsers().Where(x => x.UserName == User.Identity.Name).First();
+                var currentUser = UserService.GetAll().Where(x => x.UserName == User.Identity.Name).First();
                 IEnumerable<ApplicationDTO> appList = ApplicationsService.Find(x => x.UserOwnerId == currentUser.Id);
                 var resultList = CollectInfoAboutApplications(appList);
                 return Ok(resultList);
@@ -65,7 +64,6 @@ namespace PrL.Controllers
             return Content(HttpStatusCode.Forbidden, "You have no rights for this content");
         }
 
-        [Authorize]
         public IHttpActionResult Get(string id)
         {
             ApplicationDTO appDTO = ApplicationsService.Get(id);
@@ -101,7 +99,6 @@ namespace PrL.Controllers
         }
 
         [HttpPut]
-        [Authorize]
         public IHttpActionResult EditApplication(ApplicationEditModel app)
         {
             if (!ModelState.IsValid)
@@ -142,7 +139,7 @@ namespace PrL.Controllers
 
         private IEnumerable<ApplicationGetModel> CollectInfoAboutApplications(IEnumerable<ApplicationDTO> inputList)
         {
-            var resultList = new List<ApplicationGetModel> { };
+            var resultList = new List<ApplicationGetModel>();
             foreach (var item in inputList)
             {
                 var newResultItem = new ApplicationGetModel
@@ -153,13 +150,13 @@ namespace PrL.Controllers
                     StatusId = item.StatusId,
                     StatusName = StatusService.Get(item.StatusId).Name,
                     UserOwnerId = item.UserOwnerId,
-                    UserOwnerName = UserService.GetUser(item.UserOwnerId).UserName,
+                    UserOwnerName = UserService.Get(item.UserOwnerId).UserName,
                     ExecutorId = item.ExecutorId,
                     DateOfChangeStatus = item.DateOfChangeStatus
                 };
                 if (item.ExecutorId != null)
                 {
-                    newResultItem.ExecutorName = UserService.GetUser(item.ExecutorId).Name;
+                    newResultItem.ExecutorName = UserService.Get(item.ExecutorId).Name;
                 }
                 resultList.Add(newResultItem);
             }

@@ -27,15 +27,6 @@ namespace DAL.Identity
             _db.UsersProfiles.Add(item);
         }
 
-        public void Delete(string id)
-        {
-            var entity = _db.UsersProfiles.Find(id);
-            if (entity != null)
-            {
-                _db.UsersProfiles.Remove(entity);
-            }
-        }
-
         public ApplicationUserProfile Read(string id)
         {
             return _db.UsersProfiles.Find(id);
@@ -49,6 +40,15 @@ namespace DAL.Identity
         public void Update(ApplicationUserProfile item)
         {
             _db.UsersProfiles.AddOrUpdate(item);
+        }
+
+        public void Delete(string id)
+        {
+            var entity = _db.UsersProfiles.Find(id);
+            if (entity != null)
+            {
+                _db.UsersProfiles.Remove(entity);
+            }
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using BLL.DTO;
 using BLL.Infrastructure;
 using BLL.Interfaces;
@@ -16,8 +15,7 @@ namespace BLL.Services
     public class UserService : IUserService
     {
         private IUnitOfWork _database { get; set; }
-
-
+        
         public UserService(IUnitOfWork uow)
         {
             _database = uow;
@@ -27,7 +25,7 @@ namespace BLL.Services
         {
             get
             {
-                return _database.UserManager;
+                return _database.Users;
             }
         }
 
@@ -36,30 +34,36 @@ namespace BLL.Services
             ApplicationUser user = AppUserManager.FindByEmail(userDto.Email);
             if (user == null)
             {
-                user = new ApplicationUser { Email = userDto.Email, UserName = userDto.Email };
+                user = new ApplicationUser
+                {
+                    Email = userDto.Email,
+                    UserName = userDto.Email
+                };
                 var result = AppUserManager.Create(user, userDto.Password);
                 if (result.Errors.Count() > 0)
+                { 
                     return new OperationDetails(false, result.Errors.FirstOrDefault(), "");
-                // добавляем роль
-                AppUserManager.AddToRoles(user.Id, userDto.Roles.ToString());
-                // создаем профиль клиента
-                ApplicationUserProfile clientProfile = new ApplicationUserProfile { Id = user.Id, Name = userDto.Name };
+                }
+                AppUserManager.AddToRoles(user.Id, userDto.Roles);
+                ApplicationUserProfile clientProfile = new ApplicationUserProfile
+                                                            {
+                                                                Id = user.Id,
+                                                                Name = userDto.Name
+                                                            };
                 _database.UsersProfiles.Create(clientProfile);
                 _database.Save();
-                return new OperationDetails(true, "Регистрация успешно пройдена", "");
+                return new OperationDetails(true, "Registration complete", "");
             }
             else
             {
-                return new OperationDetails(false, "Пользователь с таким логином уже существует", "Email");
+                return new OperationDetails(false, "User with this login is already present", "Email");
             }
         }
 
         public ClaimsIdentity Authenticate(UserDTO userDto, string authenticationType)
         {
             ClaimsIdentity claim = null;
-            // находим пользователя
             ApplicationUser user = AppUserManager.Find(userDto.Email, userDto.Password);
-            // авторизуем его и возвращаем объект ClaimsIdentity
             if (user != null)
             {
                 claim = AppUserManager.CreateIdentity(user, authenticationType);
@@ -67,65 +71,62 @@ namespace BLL.Services
             return claim;
         }
 
-        // начальная инициализация бд
-        public void SetInitialData(UserDTO adminDto, List<string> roles)
-        {
-            foreach (string roleName in roles)
-            {
-                var role = _database.RoleManager.FindByName(roleName);
-                if (role == null)
-                {
-                    role = new ApplicationRole { Name = roleName };
-                    _database.RoleManager.Create(role);
-                }
-            }
-            Create(adminDto);
-        }
-
-        public IEnumerable<UserDTO> GetAllUsers()
+        public IEnumerable<UserDTO> GetAll()
         {
             var list = new List<UserDTO>();
-            foreach (var user in _database.UserManager.Users)
+            foreach (var user in _database.Users.Users)
             {
-                
-                var newUser = new UserDTO()
-                {
-                    
-                    Id = user.Id,
-                    Email = user.Email,
-                    Password = user.PasswordHash,
-                    UserName = user.UserName
-                };
-                var currentUserRolesList = AppUserManager.GetRoles(user.Id);
+                var userRolesList = AppUserManager.GetRoles(user.Id);
                 string roles = "";
-                if (currentUserRolesList != null)
+                if (userRolesList != null)
                 {
-                    foreach (var role in currentUserRolesList)
+                    foreach (var role in userRolesList)
                     {
                         roles += role + ',';
                     }
                     roles = roles.TrimEnd(',');
                 }
-                newUser.Roles = roles;
+                var newUser = new UserDTO()
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Password = user.PasswordHash,
+                    UserName = user.UserName,
+                    Roles = roles
+                };
                 list.Add(newUser);
             }
             return list;
         }
 
-        public UserDTO GetUser(string id)
+        public UserDTO Get(string id)
         {
-            var user = _database.UserManager.FindById(id);
-            UserDTO userToGet = new UserDTO
+            var user = _database.Users.FindById(id);
+            if (user == null)
+            {
+                throw new ValidationException("Invalid user id", "");
+            }
+            var userRolesList = AppUserManager.GetRoles(user.Id);
+            string roles = "";
+            if (userRolesList != null)
+            {
+                foreach (var role in userRolesList)
+                {
+                    roles += role + ',';
+                }
+                roles = roles.TrimEnd(',');
+            }
+            return new UserDTO
             {
                 Id = user.Id,
                 Email = user.Email,
                 Password = user.PasswordHash,
-                UserName = user.UserName
+                UserName = user.UserName,
+                Roles = roles
             };
-            return userToGet;
         }
 
-        public void EditUser(UserDTO userDTO)
+        public void Edit(UserDTO userDTO)
         {
             if (userDTO == null)
             {
@@ -133,11 +134,12 @@ namespace BLL.Services
             }
             try
             {
-                var appUserToChange = _database.UserManager.FindById(userDTO.Id);
+                var appUserToChange = _database.Users.FindById(userDTO.Id);
                 var appUserProfileToChange = _database.UsersProfiles.Read(userDTO.Id);
                 appUserToChange.Email = userDTO.Email;
                 appUserToChange.UserName = userDTO.UserName;
                 appUserProfileToChange.Name = userDTO.Name;
+                _database.Users.Update(appUserToChange);
                 _database.Save();
             }
             catch (Exception)
@@ -153,31 +155,13 @@ namespace BLL.Services
             {
                 return null;
             }
-            UserDTO userToGet = new UserDTO
+            return new UserDTO
             {
                 Id = user.Id,
                 Email = user.Email,
                 Password = user.PasswordHash,
                 UserName = user.UserName
             };
-            return userToGet;
-        }
-
-        public UserDTO Find(UserLoginInfo userLoginInfo)
-        {
-            var user = AppUserManager.Find(userLoginInfo);
-            if (user == null)
-            {
-                return null;
-            }
-            UserDTO userToGet = new UserDTO
-            {
-                Id = user.Id,
-                Email = user.Email,
-                Password = user.PasswordHash,
-                UserName = user.UserName
-            };
-            return userToGet;
         }
     }
 }

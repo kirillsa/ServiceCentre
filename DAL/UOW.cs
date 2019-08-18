@@ -4,7 +4,6 @@ using DAL.Interfaces;
 using DAL.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
-using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 
 namespace DAL
@@ -61,7 +60,7 @@ namespace DAL
             }
         }
 
-        public ApplicationUserManager UserManager
+        public ApplicationUserManager Users
         {
             get
             {
@@ -78,7 +77,7 @@ namespace DAL
             }
         }
 
-        public ApplicationRoleManager RoleManager
+        public ApplicationRoleManager Roles
         {
             get
             {
@@ -95,7 +94,7 @@ namespace DAL
             _db.SaveChanges();
         }
 
-        public virtual void Dispose(bool disposing)
+        public void Dispose(bool disposing)
         {
             if (!this._disposed)
             {

@@ -21,16 +21,13 @@ namespace PrL.Providers
             {
                 throw new ArgumentNullException("publicClientId");
             }
-
             _publicClientId = publicClientId;
         }
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
             var mainService = context.OwinContext.Get<IMainService>();
-
             UserDTO user = mainService.UserServices.Find(context.UserName, context.Password);
-
             if (user == null)
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
@@ -51,7 +48,6 @@ namespace PrL.Providers
             {
                 context.AdditionalResponseParameters.Add(property.Key, property.Value);
             }
-
             return Task.FromResult<object>(null);
         }
 
@@ -62,7 +58,6 @@ namespace PrL.Providers
             {
                 context.Validated();
             }
-
             return Task.FromResult<object>(null);
         }
 
@@ -71,13 +66,11 @@ namespace PrL.Providers
             if (context.ClientId == _publicClientId)
             {
                 Uri expectedRootUri = new Uri(context.Request.Uri, "/");
-
                 if (expectedRootUri.AbsoluteUri == context.RedirectUri)
                 {
                     context.Validated();
                 }
             }
-
             return Task.FromResult<object>(null);
         }
 

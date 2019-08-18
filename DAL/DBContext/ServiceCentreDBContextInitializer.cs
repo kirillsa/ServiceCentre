@@ -11,7 +11,8 @@ namespace DAL.DBContext
             StatusOfApplication status1 = new StatusOfApplication() { Name = "New" };
             StatusOfApplication status2 = new StatusOfApplication() { Name = "In Progress" };
             StatusOfApplication status3 = new StatusOfApplication() { Name = "Completed" };
-            db.Statuses.AddRange(new List<StatusOfApplication>() { status1, status2, status3 });
+            StatusOfApplication status4 = new StatusOfApplication() { Name = "Closed" };
+            db.Statuses.AddRange(new List<StatusOfApplication>() { status1, status2, status3, status4 });
             ApplicationRole role1 = new ApplicationRole() { Name = "admin" };
             ApplicationRole role2 = new ApplicationRole() { Name = "user" };
             ApplicationRole role3 = new ApplicationRole() { Name = "manager" };

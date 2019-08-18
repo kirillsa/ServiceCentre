@@ -29,11 +29,13 @@ namespace PrL.Controllers
             }
         }
 
+        [HttpGet]
         public IHttpActionResult GetAllRoles()
         {
             return Ok(RoleService.GetAll());
         }
 
+        [HttpGet]
         public IHttpActionResult GetRole(string id)
         {
             RoleDTO role = RoleService.Get(id);
@@ -89,6 +91,7 @@ namespace PrL.Controllers
             return Ok(editedRole);
         }
 
+        [HttpDelete]
         public IHttpActionResult DeleteRole(string id)
         {
             try
@@ -103,6 +106,7 @@ namespace PrL.Controllers
         }
 
         [Route("api/role/{id}/users")]
+        [HttpGet]
         public IHttpActionResult GetUsersByRole(string id)
         {
             var role = RoleService.Get(id);
@@ -110,7 +114,7 @@ namespace PrL.Controllers
             {
                 return NotFound();
             }
-            var users = UserService.GetAllUsers();
+            var users = UserService.GetAll();
             var list = new List<UserDTO>();
             foreach (var user in users)
             {

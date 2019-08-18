@@ -24,12 +24,12 @@ namespace BLL.Services
             {
                 throw new ValidationException("Invalid input status", "");
             }
+            var newStatus = new StatusOfApplication()
+            {
+                Name = item.Name
+            };
             try
             {
-                var newStatus = new StatusOfApplication()
-                {
-                    Name = item.Name
-                };
                 _dataBase.Statuses.Create(newStatus);
                 _dataBase.Save();
             }
@@ -37,21 +37,6 @@ namespace BLL.Services
             {
                 throw new ValidationException("Error while creating new status", "");
             }
-        }
-
-        public IEnumerable<StatusDTO> Find(Func<StatusDTO, Boolean> predicate)
-        {
-            var list = new List<StatusDTO>();
-            foreach (var item in _dataBase.Statuses.ReadAll())
-            {
-                var newStatus = new StatusDTO()
-                {
-                    Id = item.Id,
-                    Name = item.Name
-                };
-                list.Add(newStatus);
-            }
-            return list.Where(predicate).ToList();
         }
 
         public IEnumerable<StatusDTO> GetAll()
@@ -83,6 +68,21 @@ namespace BLL.Services
             return statusToSend;
         }
 
+        public IEnumerable<StatusDTO> Find(Func<StatusDTO, Boolean> predicate)
+        {
+            var list = new List<StatusDTO>();
+            foreach (var item in _dataBase.Statuses.ReadAll())
+            {
+                var newStatus = new StatusDTO()
+                {
+                    Id = item.Id,
+                    Name = item.Name
+                };
+                list.Add(newStatus);
+            }
+            return list.Where(predicate).ToList();
+        }
+
         public void Edit(StatusDTO item)
         {
             if (item == null)
@@ -91,10 +91,8 @@ namespace BLL.Services
             }
             try
             {
-                var statusToEdit = new StatusOfApplication()
-                {
-                    Name = item.Name
-                };
+                var statusToEdit = _dataBase.Statuses.Read(item.Id);
+                statusToEdit.Name = item.Name;
                 _dataBase.Statuses.Create(statusToEdit);
                 _dataBase.Save();
             }

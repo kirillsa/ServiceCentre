@@ -17,23 +17,14 @@ namespace DAL.Identity
             _db = context;
         }
 
-        public void Create(Application item)
-        {
-            _db.Applications.Add(item);
-        }
-
         public IEnumerable<Application> Find(Func<Application, Boolean> predicate)
         {
             return _db.Applications.Where(predicate).ToList();
         }
 
-        public void Delete(string id)
+        public void Create(Application item)
         {
-            var entity = _db.Applications.Find(id);
-            if (entity != null)
-            {
-                _db.Applications.AddOrUpdate(entity);
-            }
+            _db.Applications.Add(item);
         }
 
         public Application Read(string id)
@@ -49,6 +40,15 @@ namespace DAL.Identity
         public void Update(Application item)
         {
             _db.Applications.AddOrUpdate(item);
+        }
+
+        public void Delete(string id)
+        {
+            var entity = _db.Applications.Find(id);
+            if (entity != null)
+            {
+                _db.Applications.AddOrUpdate(entity);
+            }
         }
     }
 }
