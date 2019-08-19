@@ -38,7 +38,9 @@ namespace BLL.Services
             {
                 ApplicationName = applicationDTO.ApplicationName,
                 UserOwner = owner,
+                UserOwnerId = owner.Id,
                 Status = status,
+                StatusId = status.Id,
                 DateOfChangeStatus = DateTime.Now
             };
             try

@@ -156,7 +156,7 @@ namespace PrL.Controllers
                 };
                 if (item.ExecutorId != null)
                 {
-                    newResultItem.ExecutorName = UserService.Get(item.ExecutorId).Name;
+                    newResultItem.ExecutorName = UserService.Get(item.ExecutorId).UserName;
                 }
                 resultList.Add(newResultItem);
             }
